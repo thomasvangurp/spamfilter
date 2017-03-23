@@ -15,7 +15,7 @@ def parse_email(raw_text):
     msg = parser.close()
     return msg
 
-test_email_handle = open('/Users/thomasvangurp/PycharmProjects/spam_ham_bigdatarepublic/preprocessing/test_email.txt')
+test_email_handle = open('test_email.txt')
 raw_text = test_email_handle.read()
 msg = parse_email(raw_text)
 msg_body = msg._payload
