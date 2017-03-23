@@ -22,4 +22,20 @@ The preprocessing folder containts three scripts.
 	```
 	
 2. [match_attributes.py](preprocessing/match_attributes.py)
+	- This script parses e-mails from both ham and spam subfolder and creates an entry for every email with values for the features based on the [keyword list](words.txt) derived from find_features.py as well as some other features inspired by the [spambase](https://archive.ics.uci.edu/ml/datasets/Spambase) dataset:
+	```
+	6 continuous real [0,100] attributes of type char_freq_CHAR] 
+	= percentage of characters in the e-mail that match CHAR, i.e. 100 * (number of CHAR occurences) / total characters in e-mail 
+
+	1 continuous real [1,...] attribute of type capital_run_length_average 
+	= average length of uninterrupted sequences of capital letters 
+
+	1 continuous integer [1,...] attribute of type capital_run_length_longest 
+	= length of longest uninterrupted sequence of capital letters 
+
+	1 continuous integer [1,...] attribute of type capital_run_length_total 
+	= sum of length of uninterrupted sequences of capital letters 
+	= total number of capital letters in the e-mail 
+	``` 
+	The output is a tab separated file with an entry for every email. The feature "spam" is 1 for spam emails and 0 for ham emails. It calculates the relative frequency of the words that w
 3. [preprocessing.py](preprocessing/preprocessing.py)
