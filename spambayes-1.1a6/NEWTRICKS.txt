@@ -1,0 +1,73 @@
+This file is for ideas that have or have not yet been tried, and the
+results of these ideas.
+
+- If the email parser was able to emit warnings about misformed MIME
+  that it encountered, we could turn this warnings into tokens.
+
+- The numeric entity support looks like it will only support 8-bit
+  characters - an obvious problem is from wacky wide-char entities.
+
+  [tim] It replaces those with a question mark, because chr(n) raises
+  an exception for n > 255, and the "except" clause returns '?' then.
+  Is that a problem?  Probably not, for Americans and Europeans.
+
+- The ratio of upper-case to lower-case characters in an entire message.
+  (I'm not sure how expensive it would be to calculate this).  A lot
+  of the Nigerian scam spams I get are predominately upper-case, and
+  none of my ham.
+
+- A token indicating the length of a message (rounded to an appropriate
+  level.  Also a token indicating the ratio of message length to the
+  number of tokens, and a token indicating the number of tokens.
+  Also, [817813] add a "not in database" token (I'm not sure about this
+  one, but I can't articulate why).
+  
+- A token indicating the ratio of hapax legomena to previously seen
+  tokens in the message.
+
+- Punctuation sometimes gets inserted in otherwise spammy words or phrases,
+  e.g.: "Ch-eck ou=t ou-r sel)ection _of grea)t R_X -emgffj".  It might be
+  helpful to try stripping punctuation.  (Idea from Paul Sorenson)
+
+  [skip] I tried the first (eliding punctuation from words).  From a testing
+  standpoint it turns out to not be all that useful, I think for a couple
+  reasons:
+
+  * There are plenty of other spammy clues in such messages which are
+    sufficient to kick these messages into spam range.  Most of this stuff
+    winds up scoring at 0.95 or above for me.  If they don't score as spam
+    for you, train on a few and see how it does then.
+
+  * Training databases full of old-ish mail won't contain many of these
+    sorts of messages, so enabling punctuation removal won't change things
+    very much.
+
+  [tony] I tried Skip's patch and got basically the same results, and
+  his reasoning above sounds right for my experience, too.  OTOH, I am
+  getting more of these messages now, so my corpus is changing (they're
+  still classified as spam without this, though).
+ 
+- Similarly, some letters get replaced by numbers, e.g.: "V1agra" instead of
+  "Viagra".  Mapping numbers to suitable letters might help in some
+  situations.
+
+- [817813] Add a spelling checker and reasonable sized dictionary and generate
+  a "not in dictionary" token.
+
+- Structural analysis of URLs.  It seems a few things might yield some
+  interesting tokens:
+
+    * URLs containing a username portion
+
+    * URLs where the server is an ip address instead of a hostname
+
+    * URLs which refer to non-standard ports
+
+    * URLs in an href attribute which refer to a different web server than
+      the one surrounded by <a href="http://...">http://...</a>
+
+  Identity theft scams are increasing in frequency and seem to use one or
+  more of these schemes to hide the true nature of the URLs they attempt to
+  get you to click.
+
+

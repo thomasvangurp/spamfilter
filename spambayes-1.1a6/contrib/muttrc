@@ -1,0 +1,38 @@
+##
+## Mutt keybindings for spambayes
+## Author: Neale Pickett <neale@woozle.org>
+##
+## This muttrc assumes you are already filtering with a procmail recipie
+## similar to:
+##
+##   :0fw
+##   | sb_filter.py -t
+##
+##
+## This binds 'S' to train on the current message as spam, and 'H' to
+## train on the current message as ham.  Both of these commands
+## re-classify the message and send it through procmail, so you'll have
+## two copies after running them.
+##
+## As a special bonus, all tagged spam will be colored red on black.
+##
+## If you have any problems with this, and especially if you have any
+## improvements, please mail them to me!  Thanks to Adam Hupp for
+## helping out with the muttisms.
+##
+macro index S "|sb_filter.py -s -f | procmail\n"
+macro pager S "|sb_filter.py -s -f | procmail\n"
+macro index H "|sb_filter.py -g -f | procmail\n"
+macro pager H "|sb_filter.py -g -f | procmail\n"
+color index red black "~h 'X-Spambayes-Disposition: spam' ~F"
+
+## If you're feeling bold and don't mind the possibility of losing mail,
+## you can uncomment these lines.  These bindings automatically delete
+## the message in addition to retraining and sending through procmail.
+## If there's a problem with sb_filter, though, the message will be lost
+## forever.
+##
+#macro index S "<delete-message>|sb_filter.py -s -f | procmail\n"
+#macro pager S "<delete-message>|sb_filter.py -s -f | procmail\n"
+#macro index H "<delete-message>|sb_filter.py -g -f | procmail\n"
+#macro pager H "<delete-message>|sb_filter.py -g -f | procmail\n"

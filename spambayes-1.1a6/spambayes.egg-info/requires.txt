@@ -1,0 +1,2 @@
+lockfile>=0.2
+pydns>=2.0

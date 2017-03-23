@@ -1,0 +1,129 @@
+Additional Information about using the POP3 Proxy.
+==================================================
+
+Setting Eudora to use different ports under Windows
+---------------------------------------------------
+Eudora can be configured to support multiple pop and SMTP servers 
+on different localhost ports - at least on Windows. You just can't do it 
+from the Tools->Options menu. Eudora reads an ini file, 
+eudora.ini, at startup. The format of this file is documented in the help 
+files. Open Help-Topics, click on index and search on eudora.ini.
+
+Under W2K (at least) eudora.ini is either in the eudora install directory 
+or in the user's settings directory  depending on how you installed Eudora 
+(probably C:\Documents and Settings\userid\Application 
+Data\Qualcomm\Eudora\eudora.ini)
+
+This is how to configure Eudora 5.1 and Spambayes under Windows. Caution: 
+make two copies of eudora.ini - eudora.orig and eudora.new, for example. 
+Edit eudora.new. Close Eudora and copy the edited eudora.new to eudora.ini 
+and then re-start eudora. If you need to go back to your original settings 
+until you get it working with Spambayes, just close Eudora, copy 
+eudora.orig to eudora.ini and restart Eudora.
+
+Configure pop3proxy for each of Eudora's personality's pop servers, 
+specifying a separate port for each. I used 1110, 1120, 1130 and 1140 for 
+the four personalities I have in Eudora. Do the same for smtpproxy - again 
+I used 1115, 1125, 1135 and 1145.
+
+To configure Eudora:
+         Close Eudora.
+         In eudora.new (or whatever you called it) find the section 
+starting with [Settings]. This contains settings for the dominant personality.
+         Find the line beginning POPAccount. The last part of the account 
+name starting with '@' is the server. Change it to @localhost.
+         Find the lines beginning SMTPServer and POPServer. They will have 
+the server names defined for your dominant personality.
+         Change both server names to localhost
+         Add the following two lines. Use whatever ports you assigned to 
+pop3proxy and smtpproxy for the dominant personality.
+                 POPPort=1110
+                 SMTPPort=1115
+
+Setting for other personalities are kept in sections begging with 
+[Persona-personality_name]. For each personality make the same changes as 
+you made for the dominant personality, substituting the proper port numbers.
+
+Copy eudora.new to eudora.ini and re-start Eudora. In the password dialog 
+for each personality you should see localhost where you used to see the 
+actual server name. You should see the X-Spambayes headers which you can 
+filter on. In the web interface (localhost:8880) clicking in the Review 
+messages link should show all message processed by Spambayes.
+
+
+For MacOS 9
+-----------
+As a result of the MacOS multitasking, the proxy may not work very fast
+(reports suggest that at least a Cube or G4 400 is necessary; YMMV).
+
+To handle a network connection to 'localhost', it is easiest to add a host
+file.  If you don't have one already, create a text file called "hosts" in
+the "Preferences" folder.  The content of the file should be:
+	localhost CNAME yourmac.example.com
+	yourmac.example.com	A 127.0.0.1
+The localhost and 127.0.0.1 values must be exactly like this.  If you don't
+know the right value to use for "yourmac.example.com", put anything that
+looks like this.  The end of the first line must be the same as the start of
+the second line.
+When this file is created, go to the "TCP/IP" control panel.  Set the user
+level to 'Administrator'.  Click on "Use a host file" and select this file.
+Save your changes.
+
+On the Mac, you can transform a Python script into a double-clickable
+applet. Just drag & drop the pop3proxy.py script onto the BuildApplet
+application. You'll get a double-clickable pop3proxy application.
+
+To setup:
+  1. Start pop3proxy and open up a web browser to http://localhost:8880.
+  2. Click on the Configuration link.
+  3. Ensure that the servers line looks like:
+	pop3proxy_servers: pop.example.com:110,mail.example.com:110
+  4. And that the ports line looks like:
+	pop3proxy_ports: 110, 111
+
+To configure Entourage:
+  1. Go to the 'Tools' menu and choose 'Accounts'.
+  2. Click on 'New' and choose 'POP'.
+  3. Fill in the various fields. For the POP server field, put "localhost".
+  4. For the pop.example.com account, you are done.
+  5. For the mail.example.com account,  in the "Advance receive option"
+     window click on the "Ignore the default POP port" check box and type
+     in 111.
+
+To filter with Entourage:
+The rule can be:
+	If
+	    Specific header: X-Spambayes-Classification Contains ham
+	then    
+	    do nothing
+	If
+	    Specific header: X-Spambayes-Classification Contains spam
+	then    
+	    Move message to folder Spam
+	If
+	    Specific header: X-Spambayes-Classification Contains unsure
+	then    
+	    Move message to folder Unsure
+
+To configure Eudora:
+In Eudora, you will be able to reach only one pop server, since you can
+configure only one port number for POP. But on this server, you can access
+more than one account.
+  1. Go to the 'Tools' menu and choose 'Personalities'.
+  2. Create a new personality with the POP server as "localhost".
+  Note: You will be able to talk only to the pop.example.com server.
+
+To filter with Eudora:
+The rule can be:
+	Match
+	    Header: X-Spambayes-Classification contains ham
+	Action    
+	    do nothing
+	Match
+	    Header: X-Spambayes-Classification contains spam
+	Action    
+	    Transfer To Spam
+	Match
+	    Header: X-Spambayes-Classification contains unsure
+	Action    
+	    Transfer To Unsure

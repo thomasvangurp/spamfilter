@@ -1,0 +1,226 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+  <meta http-equiv="content-type"
+ content="text/html; charset=ISO-8859-1">
+  <title>SpamBayes Configuration</title>
+<link rel='stylesheet' type="text/css" href="style.css" title="Intended style" />
+</head>
+<body>
+
+<table width="100%" cellspacing="0" cellpadding="0">
+    <tr>
+      <td width="380"><img src="images/sblogo.jpg" title=""
+ alt="Logo" style="width: 380px; height: 77px;"></td>
+<!-- use background instead of styles to avoid mozilla bug 167262 --> <td
+ background="images/span.jpg">&nbsp;</td>
+      <td width="78"><img src="images/python.jpg"
+ style="width: 78px; height: 77px;"></td>
+    </tr>
+</table>
+
+<h1>SpamBayes Configuration</h1>
+
+<p>Most SpamBayes configuration options are managed via the SpamBayes
+Manager, available from the SpamBayes toolbar.  While this dialog allows
+you to configure standard options, there are a number of other
+(typically advanced or experimental) options that can be set manually.</p>
+
+<div class="warning">
+<p>WARNING: Please read the following before going any further:</p>
+
+<ul>
+<li>To change these options, you will need to use a text editor to edit
+configuration files.  If something goes wrong, you may lose your existing
+SpamBayes configuration (this will not effect your training data).  Making
+a copy of any files you edit is recommended.</li>
+
+<li>SpamBayes stores all configuration options, including the list of
+folders, in this file.  Do <strong>not</strong> change anything you don't
+understand.  Some of these lines are extremely long - please ensure they
+remain as a single line.</li>
+
+<li>Before manually changing any configuration files, please ensure you
+have shut down Outlook - otherwise the configuration changes you have made
+will be lost if SpamBayes itself automatically saves its configuration.
+</li>
+</ul>
+</div>
+
+<p>If you have any further questions, please post them to the
+<a href="http://mail.python.org/mailman/listinfo/spambayes">SpamBayes
+mailing list</a>.</p>
+
+<div class="contents">
+<h2>Quick links</h2>
+<p><a href="#overview">Configuration overview</a></p>
+<p><a href="#editing">Editing the configuration files</a></p>
+<p><a href="#available">Available options</a></p>
+<p><a href="#example-outlook">Simple example - Outlook</a></p>
+<p><a href="#example-spambayes">Simple example - SpamBayes</a></p>
+</div>
+
+<h2><a name="overview">Configuration overview</a></h2>
+
+<p>The Outlook plug-in uses two sets of configurations - one contains
+option values specific to the Outlook plug-in, and the other contains
+option values that are also used by other SpamBayes applications. It is
+important that you edit the correct file - if you place option values in
+the wrong file, they will have no effect.</p>
+
+<p>All options from all configuration files are &quot;merged&quot;. This
+means that any file can set any option. If multiple configuration files
+specify the same option, the value from the file last loaded is used. When
+SpamBayes writes its configuration during normal processing, the entire
+merged set of options is written. The end result of this means that next
+time SpamBayes is run, the earlier configuration files will have no effect,
+as the last one loaded (the main config file written by SpamBayes) will
+have all values already.</p>
+
+<h3>Outlook configuration files</h3>
+
+<p>The Outlook plug-in looks for configuration files as follows:</p>
+
+<ol>
+<li>A file named <tt>default_configuration.ini</tt> in the <tt>bin</tt>
+directory in the directory you installed SpamBayes into (by default
+<tt>C:\Program Files\SpamBayes</tt>). By default, no such configuration
+file will exist.</li>
+
+<li>A file named <tt>default_configuration.ini</tt> in a <tt>SpamBayes</tt>
+directory in the Windows <em>Application Data</em> directory (e.g. with
+Windows XP this is
+<tt>\Documents and Settings\{username}\Application Data\SpamBayes</tt>).
+By default, no such configuration file will exist. <strong>This is the
+default SpamBayes <a href="troubleshooting.html#LocateDataDirectory">data
+directory</a></strong>.</li>
+
+<li>A file named <tt>{outlook-profile-name}.ini</tt> in the
+<a href="troubleshooting.html#LocateDataDirectory">data directory</a>.
+Using the name of the Outlook profile means that SpamBayes will work in a
+multi-profile environment.</li>
+</ol>
+
+<h3>General SpamBayes configuration files</h3>
+
+<p>The Outlook plug-in looks for configuration files as follows:</p>
+
+<ol>
+<li>A file named <tt>default_bayes_customize.ini</tt> in the <tt>bin</tt>
+directory in the directory you installed SpamBayes into (by default
+<tt>C:\Program Files\SpamBayes</tt>).</li>
+
+<li>A file named <tt>default_bayes_customize.ini</tt> in a
+<tt>SpamBayes</tt> directory in the Windows <em>Application Data</em>
+directory (e.g. with Windows XP this is
+<tt>\Documents and Settings\{username}\Application Data\SpamBayes</tt>).
+By default, no such configuration file will exist.</li>
+
+<li>A file named <tt>{outlook-profile-name}_bayes_customize.ini</tt> in the
+<a href="troubleshooting.html#LocateDataDirectory">data directory</a>.
+Using the name of the Outlook profile means that SpamBayes will work in a
+multi-profile environment. By default, no such configuration file will
+exist.</li>
+</ol>
+
+<h2><a name="editing">Editing the configuration files</a></h2>
+
+<p>The configuration files are plain text files, and can be edited in any
+text editor (such as <tt>Notepad</tt>).  The format for both the
+Outlook-specific configuration files and the general SpamBayes
+configuration files is the same; only the available options differ.</p>
+
+<p>A configuration file has a number of sections, and each section
+contains a number of named values. For example:</p>
+<pre>[Filter]
+enabled:True
+save_spam_info:False
+</pre>
+
+<p><strong>Note that section, option, and (usually) values are all
+case-sensitive.</strong> In other words, <tt>General</tt> is not
+the same as <tt>general</tt>.</p>
+
+<p>This assigns the value <tt>True</tt> to an option named
+<tt>enabled</tt>, and the value <tt>False</tt> to an option named
+<tt>save_spam_info</tt>, both in a section named <tt>Filter</tt>.
+
+<p>If you want to set an option in a section that doesn't exist in your
+file, just add a line with the section header above the option name.
+Likewise, if you want to set an option in a file that doesn't exist
+(e.g. <tt>default_configuration.ini</tt>), you will have to create the
+file. <tt>Notepad</tt>, or any other text editor, can be used to create and
+edit .ini files.</p>
+
+<p>A configuration file pre-filled with all default values (for
+<a href="outlook-defaults.ini">Outlook-specific</a> or
+<a href="spambayes-defaults.ini">general SpamBayes</a>) can be used
+as a starting point if you would find that easier.</p>
+
+<h2><a name="available">Available options</a></h2>
+
+<p>You can see <a href="outlook-options.html">a list of Outlook-specific
+options</a>, or <a href="spambayes-options.html">a list of general
+SpamBayes options</a> that can be manually set in this release.</p>
+
+<h2><a name="example-outlook">Simple example - Outlook</h2>
+
+<p>A simple example to move your
+<a href="troubleshooting.html#LocateDataDirectory">>data directory</a> to
+a new location: <tt>C:\New Folder</tt>.</p>
+
+<ol>
+<li>Close Outlook, so that any changes made will be effective.</li>
+<li>Look in the <a href="outlook-options.html">table above</a> and see that
+the applicable option is called <tt>data_directory</tt>, it is in the
+<tt>General</tt> section.</li>
+<li>This option needs to be set before the configuration file in the
+<a href="troubleshooting.html#LocateDataDirectory">data directory</a> is
+loaded (otherwise it is obviously too late), so it can be put in
+<tt>C:\Program Files\SpamBayes\bin\default_configuration.ini</tt>
+or in the default data directory location.  This example will use the
+former.</li>
+<li>By default this file will not exist, so use <tt>Notepad</tt> to
+create it.</li>
+<li>The file only has two lines, like this:</li>
+<pre>[General]
+data_directory: C:\New Folder</pre>
+<p>(If more options were being set, the file would be longer.)</p>
+<li>Name the file <tt>default_configuration.ini</tt> and save it in
+<tt>C:\Program Files\SpamBayes\bin</tt>.</p>
+<li>Open Outlook.</li>
+<li>To check that the new data directory is being used, click the <tt>Show
+Data Folder</tt> button on the <tt>Advanced</tt> tab of the main SpamBayes
+Manager dialog.  This should open the new data directory
+(<tt>C:\New Folder</tt>, here).</li>
+</ol>
+
+<h2><a name="example-spambayes">Simple example - SpamBayes</h2>
+
+<p>A simple example to enable the "Use Bigrams" option.</p>
+
+<ol>
+<li>Close Outlook, so that any changes made will be effective.</li>
+<li>Look in the <a href="spambayes-options.html">table above</a> and see
+that the applicable option is called <tt>use_bigrams</tt>, it is in the
+<tt>Classifier</tt> section.</li>
+<li>This option can be in any configuration file.  This example will use
+the <tt>default_bayes_customize.ini</tt> file in the
+<a href="troubleshooting.html#LocateDataDirectory">data directory</a>.</li>
+<li>By default this file will not exist, so use <tt>Notepad</tt> to
+create it.</li>
+<li>The file only has two lines, like this:</li>
+<pre>[Classifier]
+use_bigrams: True</pre>
+<p>(If more options were being set, the file would be longer.)</p>
+<li>Name the file <tt>default_bayes_customize.ini</tt> and save it in
+the SpamBayes <a href="troubleshooting.html#LocateDataDirectory">data
+directory</a>.</p>
+<li>Open Outlook.</li>
+<li>This option recommends retraining after enabling it, so do so via
+the <tt>Training</tt> tab of the <tt>SpamBayes Manager</tt>.</li>
+</li>
+</ol>
+
+</body>
+</html>

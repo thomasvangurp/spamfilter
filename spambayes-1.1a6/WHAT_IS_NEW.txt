@@ -1,0 +1,292 @@
+This file covers the major changes between each release.  For more details,
+the reader is referred to the changelog (CHANGELOG.TXT in the main directory
+of the source archive), or for extreme details, to the check-ins archive
+(see <http://mail.python.org/pipermail/spambayes-checkins>).
+                                                                   
+Changes are broken into sections, so that it's easier for you to find the
+changes that are relevant to you.
+
+Any actions necessary to move to this release from the previous release are
+noted in the "Incompatible changes and Transitioning" section.
+
+Note that this is an alpha release, intended for those willing to try out
+very cutting edge software.  It is likely that there are a few unresolved
+bugs with this release.  If you would rather wait for a more stable release
+to have the new features here, please continue to use 1.0.4 until 1.1 final
+is released.
+
+New in 1.1 Alpha 5
+==================
+
+The XML-RPC plugin for core_server.py now has 'train' and 'train_mime'
+methods.
+
+The source code repository was switched from CVS to Subversion.
+
+New in 1.1 Alpha 4
+==================
+
+--------------------------------------------
+** Incompatible changes and Transitioning **
+--------------------------------------------
+
+Some options that were 'experimental' in 1.1a3 have now been upgraded to
+non-experimental, meaning the option names have had their 'x-' prefix removed.
+See below for details.
+
+Otherwise, there should be no incompatible changes since 1.1a3, though users 
+new to the 1.1 series should pay careful attention to the database changes 
+introduced in 1.1a2.
+
+-------------------
+** Other changes **
+-------------------
+
+The previously experimental options 'x-crack-images', 'x-ocr-engine' 
+and 'x-image-size' have all had their 'x-' prefix removed.  'crack-images'
+now defaults to True (meaning you don't need to change anything for it
+to be enabled), and ocr-engine defaults to 'gocr'.  The Windows binary ships 
+with the gocr engine, so this should work out-of-the-box for both for Outlook 
+and POP/IMAP/etc users.
+
+Image Cracking (ie, using OCR to extract text from images) has been
+implemented for the Outlook addin.
+
+Some localization related issues have been fixed, and a German translation
+contributed.
+
+There is a new application, core_server.py.  It is functionally similar to
+sb_server.py but uses a plugin architecture to adapt to different
+protocols.  The first plugin is for XML-RPC.
+
+New in 1.1 Alpha 3
+==================
+
+
+--------------------------------------------
+** Incompatible changes and Transitioning **
+--------------------------------------------
+
+There should be no incompatible changes since 1.1a2, though users new to the
+1.1 series should pay careful attention to the database changes introduced
+in 1.1a2.
+
+
+-------------------
+** Other changes **
+-------------------
+
+General
+-------
+
+Reported Bugs Fixed
+===================
+No bugs tracked via the Sourceforge system were fixed.
+
+
+Patches integrated
+===================
+The following patches tracked via the Sourceforge system were integrated
+in this release:
+    824651
+
+Feature Requests Added
+======================
+No feature requests tracked via the Sourceforge system were added
+in this release.
+
+
+Experimental Options
+====================
+
+In addition to the experimental options listed for the 1.1a2 release, four
+more new experimental options were added to SpamBayes.  They all need
+further testing.
+
+  o x-short_runs - If true, generate tokens based on max number of short
+    word runs. Short words are anything of length < the skip_max_word_size
+    option.  Normally they are skipped, but one common spam technique spells
+    words like 'V m I n A o G p RA' to try and avoid exposing them to
+    content filters.
+
+  o x-lookup_ip - If true, generate IP address tokens from hostnames.  This
+    requires PyDNS (http://pydns.sourceforge.net/).  This is included in the
+    Windows installer. 
+
+  o x-image_size - If true, generate tokens based on the size of the largest
+    attached image. 
+
+  o x-crack_images - A lot of recent spam contains the entire message
+    embedded in one or more attached images.  This option, if true,
+    generates tokens based on the (hopefully) text content contained in any
+    images in each message.  The current support is minimal, relies on the
+    installation of ocrad (http://www.gnu.org/software/ocrad/ocrad.html) and
+    the Python Imaging Library (a.k.a. PIL, available at
+    http://www.pythonware.com/products/pil/).  It has not yet been tested on
+    Windows, but is available in the Windows installer (as is PIL). 
+
+
+New in 1.1 Alpha 2
+==================
+
+
+--------------------------------------------
+** Incompatible changes and Transitioning **
+--------------------------------------------
+
+* NOTE * - this section does not apply to people running SpamBayes on
+Windows using the binary installer - only source code installations are 
+affected.
+
+SpamBayes has changed to use ZODB as the default database backend, rather
+than dbm (usually bsddb).  There are three methods for handling this
+transition:
+
+  o You can start with a fresh database.  It's a good idea to start
+    training over occasionally, and SpamBayes learns very rapidly, so this
+    is a feasible option.  This is the default behaviour, unless you have
+    set SpamBayes to use a different name or backend type, in which case
+    your choices will remain unchanged.
+
+  o You can continue to use your existing database files.  To do this, you
+    need to set SpamBayes to use "dbm" as the persistent storage method
+    in the configuration.  POP3 Proxy and IMAP4 filter users can do this
+    via the configuration page; Outlook and command-line tool users need
+    to manually add these lines to their configuration file:
+        [Storage]
+        persistent_use_database:dbm
+
+  o You can convert your existing database files to the new format using 
+    the utilities/convert_db.py script.
+    Note that only the token database (containing your training) is
+    converted; the 'messageinfo' database (containing statistics about
+    SpamBayes performance and a record of which messages have been
+    filtered and trained) will be replaced with an empty one.  The only
+    noticeable effect of this will be that IMAP Filter users will have
+    all messages refiltered and the Statistics reports will be restarted.
+
+If you have changed your configuration to specify which backend to use in
+the past, note that the deprecated values of "True" (meaning "dbm") and
+"False" (meaning "pickle") are no longer supported (use "dbm" or "pickle").
+    
+There should be no other incompatible changes (from 1.0.4) in this release.
+If you are transitioning from a version older than 1.0.4, please
+read the notes in the previous release notes (accessible from
+<http://sourceforge.net/project/showfiles.php?group_id=61702>).
+
+
+-------------------
+** Other changes **
+-------------------
+
+General
+-------
+ o Handling of errors when using the ZODB database backend has been
+   improved.
+ o The ZODB databases are now automatically packed, to save space.
+ o The round accounting in tte.py has additional information.
+ o Basic options are now available in sort+group.py
+ o fpfn.py now works with unsures, and offers interactivity.
+
+Outlook Plugin
+--------------
+ o The folder dialogs were broken in 1.1a1; these have been fixed.
+ 
+POP3 Proxy (sb_server.py)
+-------------------------
+ o If an error occurs while filtering, an exception header is added to
+   the message (instead of the SpamBayes headers).  In 1.1a1, this
+   exception header caused the rest of the message headers to move into
+   the message body.  This is now fixed.
+
+Web interface (sb_server.py and sb_imapfilter.py)
+-------------------------------------------------
+ o The default action for ham and spam in the review page is now 'discard'.
+   We recommend using a 'train on false positives, false negatives and
+   unsures' regime, and these are the most suitable defaults for that.
+ o The "Notate To" and "Notate Subject" options should work correctly
+   from the configuration page now.
+ o The current row of the review page is now highlighted.
+ 
+IMAP Filter (sb_imapfilter.py)
+------------------------------
+ o One-off errors in connecting to the server when using the -l option
+   are handled better.
+ o A problem with closing a folder twice was fixed.
+ o Invalid dates are handled correctly.
+ o Only selected folders are expunged.
+
+
+Reported Bugs Fixed
+===================
+The following bugs tracked via the Sourceforge system were fixed:
+  1181160, 1179055, 1187208, 1182671, 1182754, 759917
+
+A URL containing the details of these bugs can be made by appending the
+bug number to this URL:
+http://sourceforge.net/tracker/index.php?func=detail&group_id=61702&atid=498103&aid=
+
+
+Feature Requests Added
+======================
+The following feature requests tracked via the Sourceforge system were added
+in this release:
+  1182703, 618932
+
+A URL containing the details of these bugs can be made by appending the
+bug number to this URL:
+http://sourceforge.net/tracker/index.php?func=detail&group_id=61702&atid=498103&aid=
+
+
+Patches integrated
+===================
+No patches tracked via the Sourceforge system were integrated for this release.
+
+
+Deprecated Options
+==================
+
+No options are currently deprecated.
+
+
+Experimental Options
+====================
+
+We would like to remind users about our set of experimental options.  These
+are options which we believe may be of benefit to users, but have not been
+tested throughly enough to warrent full inclusion.  We would greatly
+appreciate feedback from users willing to try these options out as to their
+perceived benefit.  Both source code and binary users (including Outlook)
+can try these options out.
+
+More information about the experimental options and how to enable them
+can be found at:
+  http://spambayes.org/experimental.html
+
+If you have any queries about the experimental options, please email
+spambayes@python.org and we will try and answer them.
+                                                          
+Experimental options that are currently available include:
+  o [Tokenizer] x-search_for_habeas_headers
+  o [Tokenizer] x-reduce_habeas_headers
+    These generate tokens based on the Habeas headers (see
+    <http://habeas.com> for more details).
+  
+  o [URLRetriever] x-slurp_urls
+  o [URLRetriever] x-cache_expiry_days
+  o [URLRetriever] x-cache_directory
+  o [URLRetriever] x-only_slurp_base
+  o [URLRetriever] x-web_prefix
+    If these are used, if a message is scored as 'unsure', and could use
+    more tokens in its classification, then text from any URLs in the
+    message is retrieved and used, if it makes a difference to the
+    classification.
+
+  o [Tokenizer] x-pick_apart_urls
+    Pick out some semantic bits from URLs.
+
+  o [Tokenizer] x-fancy_url_recognition
+    Recognize 'abbreviated' URLs of the form www.xyz.com or ftp.xyz.com as
+    http://www.xyz.com and ftp://ftp.xyz.com, respectively.  This gets rid
+    of some fairly common "skip:w NNN" tokens.
+

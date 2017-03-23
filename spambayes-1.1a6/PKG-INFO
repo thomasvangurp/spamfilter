@@ -1,0 +1,26 @@
+Metadata-Version: 1.0
+Name: spambayes
+Version: 1.1a6
+Summary: Spam classification system
+Home-page: http://spambayes.sourceforge.net
+Author: the spambayes project
+Author-email: spambayes@python.org
+License: UNKNOWN
+Description: UNKNOWN
+Platform: UNKNOWN
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Environment :: Console
+Classifier: Environment :: Plugins
+Classifier: Environment :: Win32 (MS Windows)
+Classifier: License :: OSI Approved :: Python Software Foundation License
+Classifier: Operating System :: POSIX
+Classifier: Operating System :: MacOS :: MacOS X
+Classifier: Operating System :: Microsoft :: Windows :: Windows 95/98/2000
+Classifier: Operating System :: Microsoft :: Windows :: Windows NT/2000
+Classifier: Natural Language :: English
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: C
+Classifier: Intended Audience :: End Users/Desktop
+Classifier: Topic :: Communications :: Email :: Filters
+Classifier: Topic :: Communications :: Email :: Post-Office :: POP3
+Classifier: Topic :: Communications :: Email :: Post-Office :: IMAP
