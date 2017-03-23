@@ -93,9 +93,11 @@ Finally, [email_classifier.py](email_classifier.py) is the main script, with the
 		  -s SEPERATOR, --seperator SEPERATOR
 					symbol that separates the entries
 		  -m MODEL, --model MODEL
-					scikit-learn model to use
+					scikit-learn model to use, see http://scikit-learn.org/stable/
 		  -r RATIO, --ratio RATIO
 					ratio of input data to use for testing
 		  -o OUTPUT, --output OUTPUT
 					output directory for writing log file and outputs
 ```
+The classifier script applies machine learning algorithms to train a model to distinguish spam from ham entries from a training subset taken from the tsv file with parameter feature values. The model performance is subsequently evaluated on a separate “test” dataset for which we know the categories, but let the model predict these. Comparing the predicted with the actual category (spam or ham) indicates model performance. Details on the parameters, processing etc. can be found in the comments of [email_classifier.py](email_classifier.py).
+
