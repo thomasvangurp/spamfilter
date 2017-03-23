@@ -8,9 +8,6 @@ import email.parser
 #spambayes contains a usefull tokenizer for recognizing email text
 from spambayes import tokenizer
 tok = tokenizer.Tokenizer()
-# import hunspell
-# import nltk
-# hobj = hunspell.HunSpell('/Library/Spelling/en_US.dic','/Library/Spelling/en_US.aff' )
 
 # """"""
 #Features inspired by spambase.
@@ -40,17 +37,16 @@ def parse_args():
     parser = argparse.ArgumentParser(description='Match predefined parameters for creating features from text data')
     parser.add_argument('-c','--characters',
                         help='Characters to match, list of characters from txt file',
-                        default='/Users/thomasvangurp/PycharmProjects/spam_ham_bigdatarepublic/char_freq.txt')
+                        default='char_freq.txt')
     parser.add_argument('-w','--words',
                         help='words to match, list of words from txt file',
-                        #default='/Users/thomasvangurp/enron-spam/words.txt')
-                        default='/Users/thomasvangurp/PycharmProjects/spam_ham_bigdatarepublic/word_freq.txt')
+                        default='word_freq.txt')
     parser.add_argument('-i','--input_folder',
                         help='input folder, with subfolders for spam and ham',
-                        default='/Users/thomasvangurp/enron-spam')
+                        default='enron-spam')
     parser.add_argument('-o', '--output',
                         help='tab separated output file with features formatted',
-                        default='/Users/thomasvangurp/enron-spam/output_100K_spambase_48.tsv')
+                        default='enron-spam/output_100K_spambase_538.tsv')
     args = parser.parse_args()
     return args
 
@@ -61,46 +57,6 @@ def count_char(text,char):
         char_count[c] = text.count(char)
     return char_count
 
-
-# def initialize_hunspell_obj(words_to_add):
-#     """initialize hunspell object with custom words added if these do not exist..."""
-#     if os.path.exists('/Library/Spelling/en_US.dic') and os.path.exists('/Library/Spelling/en_US.aff'):
-#         hobj = hunspell.HunSpell('/Library/Spelling/en_US.dic', '/Library/Spelling/en_US.aff')
-#     else:
-#         #TODO: find automatic way for locating dictionaries
-#         #TODO: let user specify for which languages to check words
-#         raise OSError("en_US.dic and en_US.aff not found, please change path in script")
-#     for word in words_to_add:
-#         if not hobj.spell(word):
-#             hobj.add(word)
-#     return hobj
-
-
-# def clean_word(input_list, hunspell_obj):
-#     """Clean misspelled words"""
-#     output_list = []
-#     #https: // github.com / blatinier / pyhunspell
-#     #TODO: return number and ratio of misspelled words
-#     mistakes = 0
-#     correct = 0
-#     for word in input_list:
-#         if len(word) == 1 and not word[0].isalpha():
-#             continue
-#         if hunspell_obj.spell(word):
-#             #make sure we remove all non alpha-mumeric chars
-#             word = re.sub(r'[^a-zA-Z0-9]', '', word)
-#             output_list.append(word)
-#             correct += 1
-#         else:
-#             #TODO: analyze if we do not need to assess word further..
-#             try:
-#                 output_list.append(hunspell_obj.suggest(word)[0])
-#             except IndexError:
-#                 pass
-#             mistakes += 1
-#     total = correct + mistakes
-#     error_ratio = mistakes / float(total)
-#     return output_list, error_ratio
 
 def capital_run_length(text):
     """returns:
@@ -233,57 +189,38 @@ def main():
     args = parse_args()
     search_features = set_features_search(args)
     spam_files, ham_files = parse_folder(args)
-    #TODO: make subsets for training and testing of both ham and SPAM
-    #instantiate a hunspell object, search words should be added if they were not yet present
-    # hunspell_obj = initialize_hunspell_obj(search_features['words'])
     header_written = False
     out_handle = open(args.output,'w')
-    for n,file in enumerate(spam_files):
-        if not file.endswith('.gz') or file.endswith('.tar'):
-            if n % 2:
-                continue
-            if not n % 120000 and n > 0:
-                break
-            handle = open(file)
-            email_object = parse_email(handle)
-            features = get_features(email_object, search_features, tok)
-            if not features:
-                n -= 1
-                continue
-            features['spam'] = 1
-            if header_written:
+    dir_dict = {'spam':spam_files,'ham':ham_files}
+    for dir_type,files in dir_dict.items():
+        for n,file in enumerate(files):
+            #ignore files that end with .gz or .tar, these are archives.
+            if not file.endswith('.gz') or file.endswith('.tar'):
+                if n % 2:
+                    #ignore every uneven entry in the file tree
+                    continue
+                if not n % 120000 and n > 0:
+                    #hard limit at 120K emails to prevent memory issues.
+                    break
+                handle = open(file)
+                email_object = parse_email(handle)
+                #get feature count from email_object using tokenizer from spambayes
+                features = get_features(email_object, search_features, tok)
+                if not features:
+                    #for whatever reason we could not parse the email, ignore this entry and reset count to previous state
+                    n -= 1
+                    continue
+                if dir_type == 'spam':
+                    features['spam'] = 1
+                else:
+                    features['spam'] = 0
+                if not header_written:
+                    header = [k for k, v in sorted(features.items())]
+                    out_handle.write('\t'.join(header) + '\n')
+                    header_written = True
                 output = ['%f' % v for k, v in sorted(features.items())]
                 out_handle.write('\t'.join(output) + '\n')
-            else:
-                header = [k for k, v in sorted(features.items())]
-                output = ['%f' % v for k, v in sorted(features.items())]
-                out_handle.write('\t'.join(header) + '\n')
-                out_handle.write('\t'.join(output) + '\n')
-                header_written = True
-            handle.close()
-    for n,file in enumerate(ham_files):
-        if not file.endswith('.gz') or file.endswith('.tar'):
-            if n % 2:
-                continue
-            if not n % 120000 and n > 0:
-                break
-            handle = open(file)
-            email_object = parse_email(handle)
-            features = get_features(email_object, search_features, tok)
-            if not features:
-                n -= 1
-                continue
-            features['spam'] = 0
-            if header_written:
-                output = ['%f' % v for k, v in sorted(features.items())]
-                out_handle.write('\t'.join(output) + '\n')
-            else:
-                header = [k for k, v in sorted(features.items())]
-                output = ['%f' % v for k, v in sorted(features.items())]
-                out_handle.write('\t'.join(header) + '\n')
-                out_handle.write('\t'.join(output) + '\n')
-                header_written = True
-            handle.close()
+                handle.close()
     out_handle.close()
 
 
