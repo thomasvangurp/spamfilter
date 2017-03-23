@@ -119,7 +119,6 @@ def parse_folder(args):
 def set_features_search(args):
     """read features to process from files, features can be characters, words or categories"""
     search_features = {'words':[],'chars':[],'CAT':[]}
-    #TODO: test 100 most frequently used words in SPAM training set
     with open(args.words) as handle:
         for word in handle:
             if word.startswith('CAT'):
@@ -127,7 +126,7 @@ def set_features_search(args):
                 search_features['CAT'].append(word[4:].rstrip('\r').rstrip('\n'))
             else:
                 search_features['words'].append(word.rstrip('\n').rstrip('\r'))
-    #TODO: evalutate average ASCII distance and stdev http://ascii.cl between characters
+    #TODO: evalutate average ASCII distance and stdev http://ascii.cl between characters as extra feature
     with open(args.characters) as handle:
         for char in handle:
             search_features['chars'].append(char.rstrip('\n').rstrip('\r'))
@@ -150,7 +149,7 @@ def get_features(msg, search_features, tok):
     email_body = msg._payload
     if email_body == '':
         return 0
-    #If the email body contains other message(s), parse the firsr
+    #If the email body contains other message(s), parse the first
     if type(email_body[0]) == type(msg):
         email_body = msg._payload[0]._payload
         if type(email_body) != type('a'):
@@ -162,9 +161,6 @@ def get_features(msg, search_features, tok):
     features['longest_cap'] = longest_cap
     features['total_cap'] = total_cap
     features['avg_cap'] = avg_cap
-    # except UnicodeDecodeError:
-    #     email_body =  ''.join(i for i in email_body if ord(i)<128)
-    #     tokenized_words = nltk.word_tokenize(email_body)
     tokenized_words = [word for word in tok.tokenize_body(msg)]
     if len(tokenized_words) <= 1:
         return 0

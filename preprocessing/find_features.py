@@ -22,7 +22,7 @@ def parse_args():
                         help='input folder, with subfolders for spam and ham',
                         default='/Users/thomasvangurp/enron-spam')
     parser.add_argument('-o', '--words',
-                        help='top list of words that have differential occurence in SPAM vs HAM',
+                        help='output list of top words that have differential occurence in SPAM vs HAM',
                         default='/Users/thomasvangurp/enron-spam/words.txt')
     parser.add_argument('-n','--diff',
                         help='number of diff words to include',
